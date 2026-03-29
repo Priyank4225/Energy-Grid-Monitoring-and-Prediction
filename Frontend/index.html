@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Power Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f6fb;
+      padding: 30px;
+    }
+    .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+    header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #00b4db, #0083b0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+         header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    #reportDate{
+      text-align:center;
+      color: gray;
+      margin-bottom: 30px;
+    }
+
+    .sector-container{
+      display: grid;
+      gap: 30px;
+      max-width: 1300px;
+      margin: auto;
+    }
+
+    .sector-card{
+      background: #f0f4f8; /* A light grayish-blue */
+  color: #333333;      /* Dark text for contrast */
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+     .sector-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sector-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .sector-card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4bc0c0;
+        }
+
+    .sector-header{
+      margin-bottom:20px;
+    }
+
+    .stats{
+      display:flex;
+      gap:20px;
+      flex-wrap:wrap;
+      font-weight:bold;
+      margin-top:10px;
+    }
+
+    /* ⭐ NEW LAYOUT */
+    .sector-content{
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      gap:25px;
+      align-items:start;
+    }
+
+    .chart-box{
+      width:260px;
+      height:260px;
+    }
+
+    .types-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap:16px;
+    }
+
+    .type-card{
+      background:#f9fbff;
+      border-radius:12px;
+      padding:15px;
+      border:1px solid #eef1f7;
+    }
+
+    @media(max-width:900px){
+      .sector-content{
+        grid-template-columns: 1fr;
+      }
+
+      .chart-box{
+        margin:auto;
+      }
+    }
+
+  </style>
+</head>
+<body>
+    <div class="container"></div>
+
+<header>
+            <h1><i class="fas fa-bolt"></i> Maharashtra Energy Grid Dashboard</h1>
+            <p>Real-time monitoring and predictive analytics for Maharashtra's energy production and climate-adaptive energy recommendations</p>
+        </header>
+<p id="reportDate"></p>
+
+<div id="sectors" class="sector-container"></div>
+</div>
+</body>
+
+<script>
+const sectorNames = ["STATE SECTOR", "PVT SECTOR", "CENTRAL SECTOR"];
+
+fetch("http://localhost:8000")
+  .then(res => res.json())
+  .then(data => {
+
+    const dateObj = data.find(d => d.date);
+    if(dateObj){
+      document.getElementById("reportDate").innerText = "Report Date: " + dateObj.date;
+    }
+
+    renderSectors(data);
+  })
+  .catch(err => {
+    document.body.insertAdjacentHTML("afterbegin",
+      `<p style=\"color:red;text-align:center;font-weight:bold\">Failed to load dashboard data.</p>`);
+    console.error(err);
+  });
+
+
+function renderSectors(data){
+  const container = document.getElementById("sectors");
+
+  let currentSector = null;
+
+  data.forEach(item => {
+
+    if(sectorNames.includes(item.Type)){
+      currentSector = document.createElement("div");
+      currentSector.className = "sector-card";
+
+      currentSector.innerHTML = `
+        <div class="sector-header">
+          <h2>${item.Type}</h2>
+          <div class="stats">
+            <span>⚡ Capacity: ${item.Capacity}</span>
+            <span>✅ Production: ${item.Production}</span>
+            <span>📈 Expected: ${item.Expected}</span>
+            <span>❌ Unavailable: ${item["Unavailable Capacity"]}</span>
+          </div>
+        </div>
+        <div class="sector-content">
+            <div class="chart-box">
+                <canvas></canvas>
+            </div>
+            <div class="types-grid"></div>
+        </div>
+      `;
+
+      container.appendChild(currentSector);
+
+      createPieChart(currentSector.querySelector("canvas"), item);
+    }
+
+    else if(currentSector && item.Type){
+      const typesGrid = currentSector.querySelector(".types-grid");
+
+      const typeCard = document.createElement("div");
+      typeCard.className = "type-card";
+
+      typeCard.innerHTML = `
+        <h3>${item.Type}</h3>
+        <p>Capacity: ${item.Capacity}</p>
+        <p>Production: ${item.Production}</p>
+        <p>Expected: ${item.Expected}</p>
+        <p>Unavailable: ${item["Unavailable Capacity"]}</p>
+      `;
+
+      typesGrid.appendChild(typeCard);
+    }
+
+  });
+}
+
+
+function createPieChart(canvas, sector){
+  new Chart(canvas, {
+    type: 'pie',
+    data: {
+      labels: ['Production','Unavailable','Remaining'],
+      datasets: [{
+        data: [
+          sector.Production,
+          sector["Unavailable Capacity"],
+          Math.max(sector.Capacity - sector.Production - sector["Unavailable Capacity"],0)
+        ]
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false
+    }
+  });
+}
+
+</script>
+</body>
+</html>
