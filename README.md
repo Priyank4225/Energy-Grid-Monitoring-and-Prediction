@@ -22,16 +22,17 @@ A real-time energy monitoring dashboard for Maharashtra that visualizes power ge
 ## 🏗️ Project Structure
 
 ```
-project/
+Energy-Grid-Monitoring-and-Prediction/
 │
-├── main.py              # FastAPI app
-├── fetch_data.py        # Data extraction & cleaning logic
-├── requirements.txt     # Python dependencies
+├──Backend/
+|   ├── main.py
+|   └── fetch_data.py
+|
+├── Frontend/
+│   └── index.html
+│
+├── requirements.txt
 ├── LICENSE
-│
-├── frontend/
-│   └── index.html       # Dashboard UI
-│
 └── README.md
 ```
 
@@ -56,7 +57,7 @@ pip install -r requirements.txt
 ### 3. Run server
 
 ```bash
-python main.py
+python Backend/main.py
 ```
 
 Server will start at:
@@ -72,13 +73,13 @@ http://127.0.0.1:8000
 Simply open:
 
 ```
-frontend/index.html
+Frontend/index.html
 ```
 
 Or use a live server:
 
 ```bash
-npx serve frontend
+npx serve Frontend
 ```
 
 ---
