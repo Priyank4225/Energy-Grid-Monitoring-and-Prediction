@@ -12,7 +12,7 @@ A real-time energy monitoring dashboard for Maharashtra that visualizes power ge
   * Private Sector
   * Central Sector
 * 🥧 Interactive pie charts using Chart.js
-* 📅 Automatically fetches latest available DGR (Daily Generation Report).
+* 📅 Automatically fetches latest available DGR (Daily Generation Report)
 * ⚡ FastAPI backend serving cleaned and structured data
 * 🌐 Simple and responsive frontend (HTML + JS)
 * 🔮 Future-ready for ML-based energy prediction
