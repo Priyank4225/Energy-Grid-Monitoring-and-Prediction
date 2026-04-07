@@ -13,11 +13,11 @@ def find_latest_dgr(max_days_back=30):
         file = date.strftime("%Y-%m-%d")
 
         url = BASE_URL.format(folder=folder, file=file)
-
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, timeout=30)
 
         if r.status_code == 200 and len(r.content) > 1000:
             return date, r
+
 
         date -= timedelta(days=1)
 
@@ -46,6 +46,7 @@ def fetch():
     )
     cleaned = data.loc[rows, cols]
     cleaned.columns = ["Type", "Capacity", "Expected", "Production", "Unavailable Capacity"]
+    cleaned = cleaned.where(pd.notnull(cleaned), None)
     json_data = cleaned.to_dict(orient="records")
     json_data.append({"date": date.strftime("%d-%m-%Y")})
     return json_data
