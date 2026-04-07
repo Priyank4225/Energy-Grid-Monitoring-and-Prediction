@@ -126,7 +126,7 @@ def match_plant(name):
 
 def build_dataset():
     plant_data = {}
-    for i in range(4, 10):
+    for i in range(4, 35):
         date = datetime.today() - timedelta(days=i)
         df = fetch_day(date)
         if df is None:
