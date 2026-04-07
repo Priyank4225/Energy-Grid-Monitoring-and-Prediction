@@ -1,168 +1,147 @@
-# ⚡ Maharashtra Energy Grid Dashboard
+# ⚡ Maharashtra Energy Production Prediction
 
-A real-time energy monitoring dashboard for Maharashtra that visualizes power generation data from official government reports and (future) integrates machine learning for predictive analytics based on climate data.
+This project predicts **next-day energy production** for major power plants in Maharashtra using:
+
+* Historical generation data (CEA reports)
+* Weather data (OpenWeather API)
+* Machine Learning (Linear Regression)
 
 ---
 
 ## 🚀 Features
 
-* 📊 Dynamic dashboard with sector-wise breakdown:
-
-  * State Sector
-  * Private Sector
-  * Central Sector
-* 🥧 Interactive pie charts using Chart.js
-* 📅 Automatically fetches latest available DGR (Daily Generation Report)
-* ⚡ FastAPI backend serving cleaned and structured data
-* 🌐 Simple and responsive frontend (HTML + JS)
-* 🔮 Future-ready for ML-based energy prediction
+* 📊 Fetches daily generation reports from CEA
+* 🌦️ Integrates real-time & forecast weather data
+* 🤖 Trains a regression model per plant
+* 🔮 Predicts **next-day power production**
+* 🧠 Handles multiple power plants dynamically
 
 ---
 
-## 🏗️ Project Structure
+## 🗂️ Project Structure
 
 ```
-Energy-Grid-Monitoring-and-Prediction/
+.
+├── Backend/
+│   ├── main.py
+│   ├── fetch_data.py
+│   └── predict_all.py
 │
-├──Backend/
-|   ├── main.py
-|   └── fetch_data.py
-|
 ├── Frontend/
-│   └── index.html
+│   ├── index.html
+│   └── predict_all.html
 │
-├── requirements.txt
 ├── LICENSE
+├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Backend Setup (FastAPI)
+## ⚙️ Installation
 
-### 1. Create virtual environment
+### 1. Clone the repository
 
-```bash
+```
+git clone <your-repo-url>
+cd <your-project-folder>
+```
+
+---
+
+### 2. Create virtual environment
+
+```
 python -m venv venv
-source venv/bin/activate     # Linux / Mac
-venv\Scripts\activate        # Windows
+venv\Scripts\activate   # Windows
 ```
 
-### 2. Install dependencies
+---
 
-```bash
-pip install -r requirements.txt
+### 3. Install dependencies
+
+```
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-### 3. Run server
+---
 
-```bash
+## 🔑 API Setup
+
+This project uses OpenWeather API.
+
+1. Get API key from: https://openweathermap.org/api
+2. Replace in code:
+
+```
+"appid": "YOUR_API_KEY"
+```
+
+---
+
+## ▶️ Usage
+
+Run the main script:
+
+```
 python Backend/main.py
 ```
+Run Frontend/index.html
+---
 
-Server will start at:
+## 🧠 How It Works
 
-```
-http://127.0.0.1:8000
-```
+### 1. Data Collection
+
+* Fetches past few days of plant data from CEA
+* Extracts:
+
+  * Capacity
+  * Expected generation
+  * Actual production
+
+### 2. Weather Integration
+
+* Historical weather → used for training
+* Forecast weather → used for prediction
+
+### 3. Model Training
+
+* Features:
+
+  * Temperature
+  * Humidity
+  * Wind speed
+  * Capacity
+  * Expected generation
+
+* Model:
+
+  * Linear Regression
+
+### 4. Prediction
+
+* Uses **next-day forecast weather**
+* Combines with latest plant data
+* Outputs production estimate
 
 ---
 
-## 🌐 Frontend Setup
+## ⚠️ Known Limitations
 
-Simply open:
-
-```
-Frontend/index.html
-```
-
-Or use a live server:
-
-```bash
-npx serve Frontend
-```
+* Assumes linear relationships
+* Weather impact may be limited for thermal plants
+* Depends on external APIs (CEA + OpenWeather)
 
 ---
 
-## 🔗 API Endpoint
+## 🚀 Future Improvements
 
-### `GET /`
-
-Returns cleaned Maharashtra sector-wise energy data:
-
-```json
-[
-  {
-    "Type": "STATE SECTOR",
-    "Capacity": 10000,
-    "Expected": 8000,
-    "Production": 7500,
-    "Unavailable Capacity": 1500
-  },
-  ...
-  {
-    "date": "25-03-2026"
-  }
-]
-```
-
----
-
-## 📊 Data Source
-
-* Central Electricity Authority (CEA)
-* Daily Generation Reports (DGR)
-
----
-
-## ⚠️ Notes
-
-* Data is scraped dynamically — format changes may break parsing
-* Uses `.xls` format → requires `xlrd`
-* Backend is currently synchronous (can be optimized later)
-
----
-
-## 🔮 Future Enhancements
-
-* 🤖 Machine Learning model for:
-
-  * Energy demand prediction
-  * Climate-based generation forecasting
-* 🌦️ Weather API integration
-* 📈 Trend analysis charts (time-series)
-* 🧠 Sector efficiency insights
-* 🐳 Docker deployment
-* ☁️ Cloud hosting (AWS / GCP)
-
----
-
-## 🛠️ Tech Stack
-
-### Backend
-
-* FastAPI
-* Pandas
-* Requests
-
-### Frontend
-
-* HTML / CSS / JavaScript
-* Chart.js
-
----
-
-## 🧪 Example Use Case
-
-* Monitor Maharashtra energy production daily
-* Analyze sector-wise performance
-* Predict future generation based on weather conditions (planned)
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome! For major changes, please open an issue first.
+* Cache API responses (performance boost)
+* Try advanced models (Random Forest, XGBoost)
+* Add time-series modeling
+* Build dashboard for visualization
 
 ---
 
@@ -171,3 +150,14 @@ Pull requests are welcome! For major changes, please open an issue first.
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
+
+## 👨‍💻 Author
+
+Priyank Sharma
+Internship Project – Energy Prediction System
+
+---
+
+## ⭐ Support
+
+If you found this useful, consider giving it a star ⭐
